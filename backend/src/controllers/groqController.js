@@ -81,8 +81,12 @@ export const suggestReply = async (req, res) => {
       return res.status(400).json({ message: 'Message is required to suggest a reply' });
     }
 
-    const prompt = `Suggest a helpful and friendly reply to this message: ${message}`;
+    // NOTICE the updated prompt:
+    const prompt = `Suggest 3 helpful and friendly replies to this message. 
+Return them as a numbered list:\n\n"${message}"`;
+
     const suggestion = await generateGroqResponse(prompt);
+
     res.status(200).json({ suggestion });
   } catch (error) {
     console.error('Error in suggestReply:', error.message);
