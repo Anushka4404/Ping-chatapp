@@ -5,21 +5,16 @@ import toast from "react-hot-toast";
 
 const MessageInput = () => {
   const [text, setText] = useState("");
-  const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
   const { sendMessage } = useChatStore();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
-
     if (!file.type.startsWith("image/")) {
       toast.error("Please select an image file");
       return;
     }
-
-    setImageFile(file);
 
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -30,32 +25,22 @@ const MessageInput = () => {
 
   const removeImage = () => {
     setImagePreview(null);
-    setImageFile(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!text.trim() && !imageFile) return;
+    if (!text.trim() && !imagePreview) return;
 
     try {
-      const formData = new FormData();
-      formData.append("text", text.trim());
-      if (imageFile) {
-        formData.append("image", imageFile);
-      }
+      await sendMessage({
+        text: text.trim(),
+        image: imagePreview,
+      });
 
-      const response = await sendMessage(formData);  // Assuming sendMessage sends formData to backend
-
-      const { text: messageText, imageUrl } = response;  // Extract the text and imageUrl from backend response
-
-      // Add the new message to the chat UI (store it or update state)
-      addMessageToChat({ text: messageText, imageUrl });
-
-      // Clear input fields after sending
+      // Clear form
       setText("");
       setImagePreview(null);
-      setImageFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -103,9 +88,8 @@ const MessageInput = () => {
 
           <button
             type="button"
-            className={`hidden sm:flex btn btn-circle ${
-              imagePreview ? "text-emerald-500" : "text-zinc-400"
-            }`}
+            className={`hidden sm:flex btn btn-circle
+                     ${imagePreview ? "text-emerald-500" : "text-zinc-400"}`}
             onClick={() => fileInputRef.current?.click()}
           >
             <Image size={20} />
@@ -122,5 +106,4 @@ const MessageInput = () => {
     </div>
   );
 };
-
 export default MessageInput;
