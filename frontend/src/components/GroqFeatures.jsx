@@ -2,6 +2,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+// ✨ Added: Backend base URL
+const BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
 const GroqFeatures = ({ chatMessages }) => {
   const [summary, setSummary] = useState("");
   const [translated, setTranslated] = useState("");
@@ -14,7 +17,7 @@ const GroqFeatures = ({ chatMessages }) => {
     if (!chatMessages?.length) return;
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/groq/summarize", {
+      const res = await axios.post(`${BASE_URL}/api/groq/summarize`, {
         messages: chatMessages.map((m) => m.text || m.content || ""),
       });
       setSummary(res.data.summary);
@@ -33,7 +36,7 @@ const GroqFeatures = ({ chatMessages }) => {
 
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/groq/translate", {
+      const res = await axios.post(`${BASE_URL}/api/groq/translate`, {
         message: text,
         targetLang,
       });
@@ -53,15 +56,14 @@ const GroqFeatures = ({ chatMessages }) => {
 
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/groq/suggest-reply", {
+      const res = await axios.post(`${BASE_URL}/api/groq/suggest-reply`, {
         message: text,
       });
-      
+
       let replies = res.data.suggestion
-        .split(/\n\d+\.\s+/) // splits at 1. , 2. , 3. etc.
+        .split(/\n\d+\.\s+/)
         .filter(r => r.trim().length > 0);
 
-      // Remove first reply if it looks like instruction (not actual reply)
       if (replies[0]?.toLowerCase().includes("here are")) {
         replies = replies.slice(1);
       }
