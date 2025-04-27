@@ -17,12 +17,14 @@ const __dirname = path.resolve();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(
-  cors({
-    origin: 'http://localhost:5173', // Adjust this if your frontend is running elsewhere
-    credentials: true,
-  })
-);
+
+// ✅ Update CORS configuration for deployed frontend
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' ? 'https://ping-chatapp-1.onrender.com' : 'http://localhost:5173', // Adjust for your deployed frontend URL
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 // ✅ Load routes
 app.use('/api/auth', authRoutes);
