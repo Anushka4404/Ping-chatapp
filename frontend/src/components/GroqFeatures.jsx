@@ -88,7 +88,7 @@ const GroqFeatures = ({ chatMessages }) => {
           onClick={() => setShowFeatures(!showFeatures)}
           className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
         >
-          {showFeatures ? "Hide Features" : "Show Features"}
+          {showFeatures ? "Hide Features" : "Unlock Groq Magic"}
         </button>
       </div>
 
